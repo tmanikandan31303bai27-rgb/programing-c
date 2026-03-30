@@ -1,0 +1,72 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+char** fullJustify(char** words, int wordsSize, int maxWidth, int* returnSize) {
+    
+    char** result = (char**)malloc(wordsSize * sizeof(char*));
+    int index = 0, lineCount = 0;
+
+    while (index < wordsSize) {
+        int totalChars = strlen(words[index]);
+        int last = index + 1;
+
+        // Step 1: pack words
+        while (last < wordsSize) {
+            if (totalChars + 1 + strlen(words[last]) > maxWidth) break;
+            totalChars += 1 + strlen(words[last]);
+            last++;
+        }
+
+        int numWords = last - index;
+        int numSpaces = maxWidth - (totalChars - (numWords - 1));
+
+        char* line = (char*)malloc((maxWidth + 1) * sizeof(char));
+        int pos = 0;
+
+        // Step 2: last line OR single word → left justify
+        if (last == wordsSize || numWords == 1) {
+            for (int i = index; i < last; i++) {
+                int len = strlen(words[i]);
+                memcpy(line + pos, words[i], len);
+                pos += len;
+
+                if (pos < maxWidth) {
+                    line[pos++] = ' ';
+                }
+            }
+            // fill remaining spaces
+            while (pos < maxWidth) {
+                line[pos++] = ' ';
+            }
+        }
+        else {
+            // Step 3: full justify
+            int spaceSlots = numWords - 1;
+            int evenSpace = numSpaces / spaceSlots;
+            int extra = numSpaces % spaceSlots;
+
+            for (int i = index; i < last; i++) {
+                int len = strlen(words[i]);
+                memcpy(line + pos, words[i], len);
+                pos += len;
+
+                if (i < last - 1) {
+                    int spaces = evenSpace + (extra > 0 ? 1 : 0);
+                    extra--;
+
+                    for (int s = 0; s < spaces; s++) {
+                        line[pos++] = ' ';
+                    }
+                }
+            }
+        }
+
+        line[pos] = '\0';
+        result[lineCount++] = line;
+        index = last;
+    }
+
+    *returnSize = lineCount;
+    return result;
+}
