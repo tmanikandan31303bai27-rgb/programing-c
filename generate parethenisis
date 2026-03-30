@@ -1,0 +1,55 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+/**
+ * Helper function for backtracking.
+ * @param res: The array of strings to store results.
+ * @param returnSize: Pointer to the current count of valid strings found.
+ * @param current: The temporary string being built.
+ * @param open: Number of opening parentheses used so far.
+ * @param close: Number of closing parentheses used so far.
+ * @param n: Total pairs required.
+ * @param maxResults: Current capacity of the res array (for dynamic resizing).
+ */
+void backtrack(char*** res, int* returnSize, char* current, int open, int close, int n, int* maxResults) {
+    // Base Case: String is full length (2 * n)
+    if (open == n && close == n) {
+        // If result array is full, resize it (Exponential growth)
+        if (*returnSize >= *maxResults) {
+            *maxResults *= 2;
+            *res = realloc(*res, sizeof(char*) * (*maxResults));
+        }
+        (*res)[*returnSize] = strdup(current);
+        (*returnSize)++;
+        return;
+    }
+
+    // Rule 1: Can always add '(' if we haven't reached n
+    if (open < n) {
+        current[open + close] = '(';
+        backtrack(res, returnSize, current, open + 1, close, n, maxResults);
+    }
+
+    // Rule 2: Can only add ')' if it won't exceed the number of '('
+    if (close < open) {
+        current[open + close] = ')';
+        backtrack(res, returnSize, current, open, close + 1, n, maxResults);
+    }
+}
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+char** generateParenthesis(int n, int* returnSize) {
+    int maxResults = 100; // Initial guess for capacity
+    char** res = malloc(sizeof(char*) * maxResults);
+    char* current = malloc(sizeof(char) * (2 * n + 1));
+    current[2 * n] = '\0'; // Null terminator
+    
+    *returnSize = 0;
+    backtrack(&res, returnSize, current, 0, 0, n, &maxResults);
+    
+    free(current);
+    return res;
+}
