@@ -1,0 +1,33 @@
+#include <stdbool.h>
+#include <string.h>
+
+bool isMatch(char* s, char* p) {
+    int sLen = strlen(s);
+    int pLen = strlen(p);
+    
+    // dp[i][j] will be true if s[i:] matches p[j:]
+    bool dp[sLen + 1][pLen + 1];
+    memset(dp, false, sizeof(dp));
+
+    // Base case: empty string and empty pattern match
+    dp[sLen][pLen] = true;
+
+    // Fill the DP table from bottom-up
+    for (int i = sLen; i >= 0; i--) {
+        for (int j = pLen - 1; j >= 0; j--) {
+            bool firstMatch = (i < sLen && (p[j] == s[i] || p[j] == '.'));
+
+            if (j + 1 < pLen && p[j + 1] == '*') {
+                // If there's a '*', we have two choices:
+                // 1. Skip the "char*" (dp[i][j+2])
+                // 2. Use the match and stay on the '*' (firstMatch && dp[i+1][j])
+                dp[i][j] = dp[i][j + 2] || (firstMatch && dp[i + 1][j]);
+            } else {
+                // No '*', just check for simple match and move both pointers
+                dp[i][j] = firstMatch && dp[i + 1][j + 1];
+            }
+        }
+    }
+
+    return dp[0][0];
+}
