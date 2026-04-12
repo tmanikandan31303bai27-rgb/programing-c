@@ -1,0 +1,101 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+struct ListNode* partition(struct ListNode* head, int x){
+    
+struct ListNode* curr,*prev,*s;
+s=NULL;
+curr=head;
+while(curr!=NULL)
+{
+    if(curr->val<x)
+    {
+        struct ListNode* temp=(struct ListNode*)malloc(sizeof(struct ListNode));
+        temp->val=curr->val;
+        temp->next=NULL;
+        if(s==NULL)
+        {
+            s=temp;
+        }
+        else
+        {
+            struct ListNode* s1=s;
+            while(s1->next!=NULL)
+            {
+                s1=s1->next;
+            }
+            s1->next=temp;
+        }
+    }
+    curr=curr->next;
+}
+curr=head;
+if(s==NULL)
+{
+    return head;
+}
+struct ListNode* c=NULL;
+struct ListNode* t=s;
+while(t!=NULL)
+{
+    struct ListNode* temp=(struct ListNode*)malloc(sizeof(struct ListNode));
+        temp->val=t->val;
+        temp->next=NULL;
+        if(c==NULL)
+        {
+            c=temp;
+        }
+        else
+        {
+            struct ListNode *cc=c;
+            while(cc->next!=NULL)
+            {
+                cc=cc->next;
+            }
+            cc->next=temp;
+        }
+        t=t->next;
+}
+
+
+while(curr!=NULL)
+{
+    struct ListNode* s1=c;
+            while(s1->next!=NULL&&s1->val!=curr->val)
+            {
+                s1=s1->next;
+            }
+            if(s1->next!=NULL)
+            {
+                curr=curr->next;
+            }
+            else
+            {
+                if(s1->val==curr->val)
+                {
+                    curr=curr->next;
+                }
+                else
+                {
+    struct ListNode* temp=(struct ListNode*)malloc(sizeof(struct ListNode));
+        temp->val=curr->val;
+        temp->next=NULL;
+        struct ListNode* s1=s;
+            while(s1->next!=NULL)
+            {
+                s1=s1->next;
+            }
+            s1->next=temp;
+            curr=curr->next;
+                }
+
+            }
+}
+return s;
+
+
+}
